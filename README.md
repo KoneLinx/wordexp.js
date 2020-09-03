@@ -19,11 +19,6 @@ var argv = wordexp( input );
 Example:
 
 `single words 'multiple words' "\"escaped\" characters -e --option="value string"`
-
-Will be expanded to:
-
-\[ `single`, `words`, `multiple words`, `"escaped" characters`, `-e`, `--option=value string` ]
-
 ```js
 > wordexp("single words 'multiple words' \"\\\"escaped\\\" characters\" -e --option=\"value string\"")
 [
