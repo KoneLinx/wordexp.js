@@ -12,7 +12,6 @@ void WordExp(const v8::FunctionCallbackInfo< v8::Value >& args)
 
 	wordexp_t e;
 	int error = wordexp(*input, &e, 0); // the (magi)C function
-	auto* arr = new v8::Local<v8::Value>[e.we_wordc];
 
 	if (error)
 	{
@@ -33,10 +32,16 @@ void WordExp(const v8::FunctionCallbackInfo< v8::Value >& args)
 			break;
 		case WRDE_NOSPACE:
 			e = v8::Exception::WasmRuntimeError(v8::String::NewFromUtf8Literal(isolate, "Internal error: No allocation space left."));
+			break;
+		default:
+			e = v8::Exception::WasmRuntimeError(v8::String::NewFromUtf8Literal(isolate, "Internal error: Unknown error"));
 		}
 		isolate->ThrowException(e);
-		goto cleanup;
+		return;
 	}
+
+
+	auto* arr = new v8::Local<v8::Value>[e.we_wordc];
 
 	for (unsigned i{}; i < e.we_wordc; ++i)
 	{
@@ -45,9 +50,7 @@ void WordExp(const v8::FunctionCallbackInfo< v8::Value >& args)
 	}
 	args.GetReturnValue().Set(v8::Array::New(isolate, arr, e.we_wordc));
 
-cleanup: // Cleanup, never skip this
 	delete[] arr;
-	wordfree(&e);
 
 }
 
