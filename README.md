@@ -17,8 +17,8 @@ var argv = wordexp( input );
 ```
 
 Example:
-`input: string`
-`single words 'multiple words' "\"escaped\" characters -e --option="value string"`
+
+`input: string`   `single words 'multiple words' "\"escaped\" characters -e --option="value string"`
+
 Will be expanded to:
-`argv: string[]`
-\[ `single`, `words`, `multiple words`, `"escaped" characters`, `-e`, `--option=value string` ]
+`argv: string[]`  \[ `single`, `words`, `multiple words`, `"escaped" characters`, `-e`, `--option=value string` ]
