@@ -1,0 +1,16 @@
+'installing' the package is not needed.
+You can either build the package yourself or use the prebuilt ./build/Release folder.
+If you downloaded the git repositiry. A ./build folder built for windows is included and should work without having to build anything.
+To build the package, see ./build.txt
+
+In order to use this package. require() this folder and it should work.
+
+// in 'your_code.js'
+const WORDEXP = require( '/path/to/wordexp.js')
+// or
+const WORDEXP = require( '/path/to/wordexp.js/index.js')
+
+Usage:
+
+WORDEXP( 'this is "test input"' );
+//returns: [ 'this', 'is', 'test input' ]

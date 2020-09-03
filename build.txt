@@ -1,0 +1,29 @@
+Requirements:
+
+	node
+	npm
+	node-gyp (mpn package)
+
+Windows:
+	MSVC
+	Windows 7/8/10 SDK
+
+Unix:
+	GCC
+	(possibly more, see error when build fails)
+
+How to build:
+
+$ node-gyp configure
+$ node-gyp build
+
+
+NOTE:
+
+"Linker error: could not find 'wordexpr'"
+"Linker error: could not find 'wordfree'"
+
+Building on windows may require you to add a reference to the files ./wordexp.h and ./wordexp.ccp inside ./build/binding.sln
+This can be done by opening ./build/binding.sln in visual studio and "Add > Existing Item" to "Solution 'binding' > wordexp > .." in the Solution Explorer window.
+
+I have not yet built this under a unix system, but the same might have to be done.

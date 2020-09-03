@@ -1,0 +1,7 @@
+.git
+
+#visual studio
+build/*.*
+build/Release/obj
+build/Debug
+build/.vs

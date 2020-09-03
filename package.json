@@ -1,0 +1,9 @@
+{
+  "name": "wordexp.js",
+  "version": "0.1.1",
+  "description": "wordexp, perform word expansion like a posix-shell",
+  "main": "index.js",
+  "author": "KoneLinx, じえっる〔JL_.〕#1606",
+  "license": "GPL-3.0-or-later",
+  "gypfile": true
+}
