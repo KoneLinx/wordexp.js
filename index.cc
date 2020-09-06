@@ -1,8 +1,9 @@
 
-#include "./wordexp.h"
+#include "wordexp.h"
 
 #include <cstdint>
 #include <node.h>
+#include <utility>
 
 void WordExp(const v8::FunctionCallbackInfo< v8::Value >& args)
 {
@@ -10,45 +11,45 @@ void WordExp(const v8::FunctionCallbackInfo< v8::Value >& args)
 	v8::String::Utf8Value input(isolate, args[0]);
 	auto local = v8::String::Empty(isolate);
 
-	wordexp_t e;
-	int error = wordexp(*input, &e, 0); // the (magi)C function
+	Wordexp< std::remove_reference<decltype(**input)>::type > we{ *input };
 
-	if (error)
+	if (!we)
 	{
 		v8::Local<v8::Value> e;
-		switch (error)
+		switch (we.error)
 		{
-		case WRDE_SYNTAX:
+		case wordexp::error::SYNTAX:
 			e = v8::Exception::SyntaxError(v8::String::NewFromUtf8Literal(isolate, "Bad syntax: Could not expand input string"));
 			break;
-		case WRDE_BADCHAR:
+		case wordexp::error::BADCHAR:
 			e = v8::Exception::SyntaxError(v8::String::NewFromUtf8Literal(isolate, "Bad char: Invalid character was found while expanding input string"));
 			break;
-		case WRDE_BADVAL:
+		case wordexp::error::BADVAL:
 			e = v8::Exception::TypeError(v8::String::NewFromUtf8Literal(isolate, "Internal error: A variable had no reference"));
 			break;
-		case WRDE_CMDSUB:
+		case wordexp::error::CMDSUB:
 			e = v8::Exception::SyntaxError(v8::String::NewFromUtf8Literal(isolate, "Internal error: Cmd substitution with no Cmd"));
 			break;
-		case WRDE_NOSPACE:
+		case wordexp::error::NOSPACE:
 			e = v8::Exception::WasmRuntimeError(v8::String::NewFromUtf8Literal(isolate, "Internal error: No allocation space left."));
 			break;
 		default:
-			e = v8::Exception::WasmRuntimeError(v8::String::NewFromUtf8Literal(isolate, "Internal error: Unknown error"));
+			std::string what{ "Internal error: Unknown error " + std::to_string(we.error) };
+			v8::String::NewFromUtf8(isolate, what.c_str()).ToLocal(&local);
+			e = v8::Exception::WasmRuntimeError(local);
 		}
 		isolate->ThrowException(e);
 		return;
 	}
 
+	auto* arr = new v8::Local<v8::Value>[we._wordexp.we_wordc];
 
-	auto* arr = new v8::Local<v8::Value>[e.we_wordc];
-
-	for (unsigned i{}; i < e.we_wordc; ++i)
+	for (unsigned i{}; i < we._wordexp.we_wordc; ++i)
 	{
-		v8::String::NewFromUtf8(isolate, e.we_wordv[i]).ToLocal(&local);
+		v8::String::NewFromUtf8(isolate, we._wordexp.we_wordv[i]).ToLocal(&local);
 		arr[i] = local.As<v8::Value>();
 	}
-	args.GetReturnValue().Set(v8::Array::New(isolate, arr, e.we_wordc));
+	args.GetReturnValue().Set(v8::Array::New(isolate, arr, we._wordexp.we_wordc));
 
 	delete[] arr;
 
