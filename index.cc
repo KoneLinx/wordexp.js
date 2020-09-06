@@ -16,7 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 
-#include "wordexp.h"
+#include "lib/wordexp.cpp/wordexp.h"
 
 #include <cstdint>
 #include <node.h>
